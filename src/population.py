@@ -125,9 +125,9 @@ class Population:
 			self.elite.append(self.states[i])
 
 if __name__ == "__main__":
-	n = 8
-	k = 10
-	e = 2
+	n = 20
+	k = 40
+	e = 4
 	pop = Population(k, n, e)
 	while (pop.states[0].fitness() < ((n-1)*n)/2):
 		pop.iteration()

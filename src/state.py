@@ -6,7 +6,8 @@ class State:
 
     def __str__(self):
         return str(self.values)
-    
+
+    # Runs in O(n^2) sadly    
     def fitness(self):
         fit = 0
         for i in range(self.n):
