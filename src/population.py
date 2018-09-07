@@ -6,14 +6,18 @@ def get_fitness(x):
 	return x.fitness()
 
 class Population:
-	def __init__(self, k, n, elite):
+	def __init__(self, k, n, e):
 		self.states = []
 		self.n = n
 		self.k = k
-		self.elitesz = elite
+		self.e = e
+		self.elite = []
 		self.generate_random()
 		self.generation = 0
-
+		self.order()
+		for i in range(self.e):
+			self.elite.append(self.states[i])
+	
 	def generate_random(self):
 		random.seed()
 		for i in range(self.k):
@@ -56,15 +60,30 @@ class Population:
 
 	def iteration(self):
 		new_states = []
-		for i in range(math.floor(self.k/2)):
+
+		self.order()
+		self.update_elite()
+
+		for i in range(math.floor((self.k - self.e)/2)):
 			r = self.random_select()
 			new_states.extend(self.reproduce(r[0], r[1]))
+
 		self.states = new_states
+
+		for el in self.elite:
+			self.states.append(el)
+
 		print(self.generation)
 		self.generation+=1
-		for i in range(self.k):
-			self.mutate(self.states[i])
+
+		for el in self.states:
+			self.mutate(el)
+		
+		for el in self.elite:
+			self.states.append(el)
+		
 		self.order()
+
 		print("Best: ", self.states[0])
 		return new_states
 	
@@ -91,6 +110,11 @@ class Population:
 		if prob < mut_prob:
 			i = random.randrange(0, self.n)
 			x.values[i] = random.randrange(0, self.n)
+	
+	def update_elite(self):
+		self.elite = []
+		for i in range(self.e):
+			self.elite.append(self.states[i])
 
 if __name__ == "__main__":
 	pop = Population(10, 8, 2)
