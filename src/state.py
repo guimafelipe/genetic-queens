@@ -6,9 +6,6 @@ class State:
 
     def __str__(self):
         return str(self.values)
-
-    def crossover(self, ind):
-        self.values[ind] = 5
     
     def fitness(self):
         fit = 0

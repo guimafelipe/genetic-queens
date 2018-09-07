@@ -15,9 +15,8 @@ class Population:
 		self.generate_random()
 		self.generation = 0
 		self.order()
-		for i in range(self.e):
-			self.elite.append(self.states[i])
-	
+
+	# Generate initial set, in O(n*k)
 	def generate_random(self):
 		random.seed()
 		for i in range(self.k):
@@ -25,11 +24,14 @@ class Population:
 			for j in range(self.n):
 				values.append(random.randrange(0, self.n))
 			self.states.append(State(self.n, values))
-	
+
+	# Order funcion, runs in O(k.log(k))
 	def order(self):
 		self.states = sorted(self.states, key=lambda state: state.fitness(), reverse = True)
 
-	def random_select(self):
+	# Random slection function, wich select 2 elements to reproduce
+	# runs in O(k + nmb)
+	def random_select(self, nmb):
 		weigths = []
 		wsum = 0
 		for i in range(len(self.states)):
@@ -37,7 +39,7 @@ class Population:
 			wsum += self.states[i].fitness()
 		
 		probs = []
-		for i in range(2):
+		for i in range(nmb):
 			probs.append(random.randrange(0, wsum))
 		probs = sorted(probs)
 		currsum = 0
@@ -58,15 +60,18 @@ class Population:
 
 		return r
 
+	# Iterarion function, runs every new generation
+	# Time complexity: O(k.log(k)) + O(e) + O(2*k-e) + O(e) + O(k) + 
 	def iteration(self):
 		new_states = []
 
 		self.order()
 		self.update_elite()
 
-		for i in range(math.floor((self.k - self.e)/2)):
-			r = self.random_select()
-			new_states.extend(self.reproduce(r[0], r[1]))
+		r = self.random_select(self.k - self.e)
+
+		for i in range(0, self.k - self.e, 2):
+			new_states.extend(self.reproduce(r[i], r[i+1]))
 
 		self.states = new_states
 
@@ -87,6 +92,7 @@ class Population:
 		print("Best: ", self.states[0])
 		return new_states
 	
+	# Reproduce function, runs in O(n)
 	def reproduce(self, a, b):
 		vala = []
 		valb = []
@@ -104,20 +110,22 @@ class Population:
 		resp.append(nb)
 		return na, nb
 
+	# Mutate function, runs in O(1)
 	def mutate(self, x):
-		mut_prob = 0.2
+		mut_prob = 0.3
 		prob = random.random()
 		if prob < mut_prob:
 			i = random.randrange(0, self.n)
 			x.values[i] = random.randrange(0, self.n)
 	
+	# Update elite function, runs in O(e)
 	def update_elite(self):
 		self.elite = []
 		for i in range(self.e):
 			self.elite.append(self.states[i])
 
 if __name__ == "__main__":
-	n = 15
+	n = 8
 	k = 10
 	e = 2
 	pop = Population(k, n, e)
