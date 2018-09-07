@@ -4,6 +4,9 @@ class State:
         self.n = n
         self.values = values
 
+    def __str__(self):
+        return str(self.values)
+
     def crossover(self, ind):
         self.values[ind] = 5
     
