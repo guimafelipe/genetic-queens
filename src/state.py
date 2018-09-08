@@ -1,4 +1,3 @@
-
 class State:
     def __init__(self, n, values):
         self.n = n
@@ -27,7 +26,7 @@ class State:
             up_diagonals[diagonal] += 1
 
         for i in range(self.n):
-            diagonal = i - self.values[i]
+            diagonal = i + self.values[i]
             if low_diagonals.get(diagonal, -1) == -1:
                 low_diagonals[diagonal] = 0
             low_diagonals[diagonal] += 1
@@ -46,4 +45,4 @@ class State:
 
 if __name__ == "__main__":
     s1 = State(8, [2,4,7,4,8,5,5,2])
-    print(s1.fitness())
+    print(s1.fitness()) # 21

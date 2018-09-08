@@ -1,4 +1,4 @@
-from state import *
+from src.state import *
 import random
 import math
 
@@ -122,6 +122,9 @@ class Population:
 		self.elite = []
 		for i in range(self.e):
 			self.elite.append(self.states[i])
+	
+	def get_best(self):
+		return self.states[0]
 
 if __name__ == "__main__":
 	n = 50
