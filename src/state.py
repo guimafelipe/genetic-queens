@@ -43,13 +43,6 @@ class State:
 
         fit = (self.n*(self.n-1))/2 - fit
         return fit
-    
-    def atacking(self, i, j):
-        if(self.values[i] == self.values[j]):
-            return 0
-        if(abs(i-j) == abs(self.values[i] - self.values[j])):
-            return 0
-        return 1
 
 if __name__ == "__main__":
     s1 = State(8, [2,4,7,4,8,5,5,2])

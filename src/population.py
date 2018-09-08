@@ -6,11 +6,12 @@ def get_fitness(x):
 	return x.fitness()
 
 class Population:
-	def __init__(self, k, n, e):
+	def __init__(self, k, n, e, m):
 		self.states = []
-		self.n = n
-		self.k = k
-		self.e = e
+		self.n = n # board size
+		self.k = k # population size
+		self.e = e # elite size
+		self.m = m # mutation probability
 		self.elite = []
 		self.generate_random()
 		self.generation = 0
@@ -111,9 +112,8 @@ class Population:
 
 	# Mutate function, runs in O(1)
 	def mutate(self, x):
-		mut_prob = 0.3
 		prob = random.random()
-		if prob < mut_prob:
+		if prob < self.m:
 			i = random.randrange(0, self.n)
 			x.values[i] = random.randrange(0, self.n)
 	
@@ -127,7 +127,8 @@ if __name__ == "__main__":
 	n = 50
 	k = 40
 	e = 6
-	pop = Population(k, n, e)
+	m = 0.5
+	pop = Population(k, n, e, m)
 	while (pop.states[0].fitness() < ((n-1)*n)/2):
 		pop.iteration()
 	
