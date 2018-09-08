@@ -21,17 +21,25 @@ BOARD_D		= ( 58,  41,  14)
 
 pygame.init()
 
-n = int(sys.argv[1]) or 50
-k = int(sys.argv[2]) or 40
-e = int(sys.argv[3]) or 6
-m = float(sys.argv[4]) or 0.5
+if(len(sys.argv) < 5):
+	n = 50
+	k = 40
+	e = 6
+	m = 0.5
+else:
+	n = int(sys.argv[1])
+	k = int(sys.argv[2])
+	e = int(sys.argv[3])
+	m = float(sys.argv[4])
 
 assert(n == 10 or n == 20 or n == 30 or n == 50)
 assert(k%2 == 0)
 assert(e%2 == 0)
 assert(m < 1.0 and m > 0.0)
 
-screen = pygame.display.set_mode((800, 800), 0, 32)
+screen_size = 900
+
+screen = pygame.display.set_mode((screen_size, screen_size), 0, 32)
 screen.fill(WHITE)
 
 pygame.display.set_caption('Genetic Queens')
@@ -41,9 +49,12 @@ target = (n*(n-1))/2
 
 clock = pygame.time.Clock()
 
-snap = math.ceil(800.0/n)
+snap = math.floor(screen_size/n)
 
 achou = False
+generation = 0
+pygame.font.init()
+myfont = pygame.font.SysFont('Sans Serif', math.ceil(snap*1.5))
 
 while True:
 	for event in pygame.event.get():
@@ -61,6 +72,7 @@ while True:
 
 	if not achou:
 		pop.iteration()
+		generation += 1
 		res = pop.get_best()
 		if res.fitness() == target:
 			achou = True
@@ -69,6 +81,14 @@ while True:
 	for i in range(len(res.values)):
 		j = res.values[i]
 		pygame.draw.circle(screen, BLUE, [i*snap + math.ceil(snap/2), j*snap + math.ceil(snap/2)], math.ceil(snap/3))
+	
+	if achou:
+		textcolor = GREEN
+	else:
+		textcolor = RED
+	textsurface = myfont.render('Generation: ' + str(generation), False, textcolor)
+	screen.blit(textsurface, (0,0))
+
 
 	pygame.display.update()
 	time_passed = clock.tick(30)
