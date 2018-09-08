@@ -65,7 +65,6 @@ class Population:
 	def iteration(self):
 		new_states = []
 
-		self.order()
 		self.update_elite()
 
 		r = self.random_select(self.k - self.e)
@@ -125,9 +124,9 @@ class Population:
 			self.elite.append(self.states[i])
 
 if __name__ == "__main__":
-	n = 20
+	n = 50
 	k = 40
-	e = 4
+	e = 6
 	pop = Population(k, n, e)
 	while (pop.states[0].fitness() < ((n-1)*n)/2):
 		pop.iteration()
