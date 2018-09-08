@@ -32,7 +32,7 @@ else:
 	e = int(sys.argv[3])
 	m = float(sys.argv[4])
 
-assert(n == 10 or n == 20 or n == 30 or n == 50)
+assert(n == 15 or n == 20 or n == 30 or n == 50)
 assert(k%2 == 0)
 assert(e%2 == 0)
 assert(m < 1.0 and m > 0.0)
