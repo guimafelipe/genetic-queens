@@ -6,13 +6,11 @@ def get_fitness(x):
 	return x.fitness()
 
 class Population:
-	def __init__(self, k, n, e, m):
+	def __init__(self, k, n, m):
 		self.states = []
 		self.n = n # board size
 		self.k = k # population size
-		self.e = e # elite size
 		self.m = m # mutation probability
-		self.elite = []
 		self.base = [i for i in range(self.n)]
 		self.generate_random()
 		self.generation = 0
@@ -65,8 +63,6 @@ class Population:
 	def iteration(self):
 		new_states = []
 
-		self.update_elite()
-
 		r = self.random_select(self.k)
 
 		for i in range(0, self.k, 2):
@@ -74,19 +70,14 @@ class Population:
 
 		self.states.extend(new_states)
 		self.order()
-		self.states = self.states[0:(self.k - self.e)]
+		self.states = self.states[0:self.k]
 
 		self.generation+=1
-
-		self.states.extend(self.elite)
 		
 		for el in self.states:
 			self.mutate(el)
 			self.mutate(el)
-		
-		self.order()
 
-		print("Best: ", self.states[0].fitness())
 		return new_states
 	
 	def crossover(self, cut1, cut2, inserted, values, valuesres):
@@ -143,13 +134,6 @@ class Population:
 				x.values[i] = x.values[j]
 				x.values[j] = aux
 	
-	# Update elite function, runs in O(e)
-	def update_elite(self):
-		self.elite = []
-		self.order()
-		for i in range(self.e):
-			self.elite.append(State(self.n, self.states[i].values))
-	
 	def get_best(self):
 		return self.states[0]
 
@@ -158,7 +142,7 @@ if __name__ == "__main__":
 	k = 40
 	e = 6
 	m = 0.5
-	pop = Population(k, n, e, m)
+	pop = Population(k, n, m)
 	s1 = State(n, [0,1,2,3,4,5,6,7])
 	s2 = State(n, [7,6,5,4,3,2,1,0])
 	res = pop.reproduce(s1, s2)

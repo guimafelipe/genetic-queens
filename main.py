@@ -21,20 +21,17 @@ BOARD_D		= ( 58,  41,  14)
 
 pygame.init()
 
-if(len(sys.argv) < 5):
+if(len(sys.argv) < 4):
 	n = 50
 	k = 40
-	e = 6
 	m = 0.5
 else:
 	n = int(sys.argv[1])
 	k = int(sys.argv[2])
-	e = int(sys.argv[3])
-	m = float(sys.argv[4])
+	m = float(sys.argv[3])
 
 assert(n == 15 or n == 20 or n == 30 or n == 50)
 assert(k%2 == 0)
-assert(e%2 == 0)
 assert(m < 1.0 and m > 0.0)
 
 screen_size = 900
@@ -44,7 +41,7 @@ screen.fill(WHITE)
 
 pygame.display.set_caption('Genetic Queens')
 
-pop = Population(k, n, e, m)
+pop = Population(k, n, m)
 target = (n*(n-1))/2
 
 clock = pygame.time.Clock()
