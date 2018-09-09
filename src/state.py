@@ -1,7 +1,7 @@
 class State:
     def __init__(self, n, values):
         self.n = n
-        self.values = values
+        self.values = values.copy()
 
     def __str__(self):
         return str(self.values)

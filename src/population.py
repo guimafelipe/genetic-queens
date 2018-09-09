@@ -1,4 +1,4 @@
-from src.state import *
+from state import *
 import random
 import math
 
@@ -13,6 +13,7 @@ class Population:
 		self.e = e # elite size
 		self.m = m # mutation probability
 		self.elite = []
+		self.base = [i for i in range(self.n)]
 		self.generate_random()
 		self.generation = 0
 		self.order()
@@ -21,10 +22,9 @@ class Population:
 	def generate_random(self):
 		random.seed()
 		for i in range(self.k):
-			values = []
-			for j in range(self.n):
-				values.append(random.randrange(0, self.n))
-			self.states.append(State(self.n, values))
+			random.shuffle(self.base)
+			# print(self.base)
+			self.states.append(State(self.n, self.base))
 
 	# Order funcion, runs in O(k.log(k))
 	def order(self):
@@ -78,7 +78,7 @@ class Population:
 		for el in self.elite:
 			self.states.append(el)
 
-		print(self.generation)
+		# print(self.generation)
 		self.generation+=1
 
 		for el in self.states:
@@ -89,33 +89,67 @@ class Population:
 		
 		self.order()
 
-		print("Best: ", self.states[0])
+		# print("Best: ", self.states[0])
 		return new_states
 	
+	def crossover(self, cut1, cut2, inserted, values, valuesres):
+		i = 0
+		j = 0
+
+		res = valuesres.copy()
+		
+		print("cut1: ", cut1, "cut2: ", cut2)
+		print("Inserted: ", inserted)
+		print("Values: ", values)
+		print("ResValues: ", valuesres)
+
+		while i < cut1:
+			while values[j] in inserted:
+				j+=1
+			res[i] = values[j]
+			i+=1
+			j+=1
+		
+		i = cut2
+		while i < self.n:
+			while values[j] in inserted:
+				j += 1
+			res[i] = values[j]
+			i+=1
+			j+=1
+		print("resultado: ", res)
+		return res
+
 	# Reproduce function, runs in O(n)
 	def reproduce(self, a, b):
-		vala = []
-		valb = []
-		cut = random.randrange(1, self.n-1)
-		for i  in range(cut):
-			vala.append(a.values[i])
-			valb.append(b.values[i])
-		for i in range(cut, self.n):
-			vala.append(b.values[i])
-			valb.append(a.values[i])
+		cut1 = random.randrange(0, self.n-1)
+		cut2 = random.randrange(cut1 + 1, self.n)
+		ainserted = a.values[cut1:cut2]
+		binserted = b.values[cut1:cut2]
+
+		vala = self.crossover(cut1, cut2, ainserted, b.values, a.values)	
+		valb = self.crossover(cut1, cut2, binserted, a.values, b.values)
+
+
 		resp = []
 		na = State(self.n, vala)
 		nb = State(self.n, valb)
 		resp.append(na)
 		resp.append(nb)
-		return na, nb
+		return resp
 
 	# Mutate function, runs in O(1)
 	def mutate(self, x):
 		prob = random.random()
+		before = State(self.n, x.values)
 		if prob < self.m:
 			i = random.randrange(0, self.n)
-			x.values[i] = random.randrange(0, self.n)
+			j = random.randrange(0, self.n)
+			aux = x.values[i]
+			x.values[i] = x.values[j]
+			x.values[j] = aux
+			if before.fitness() > x.fitness():
+				x = before
 	
 	# Update elite function, runs in O(e)
 	def update_elite(self):
@@ -127,12 +161,17 @@ class Population:
 		return self.states[0]
 
 if __name__ == "__main__":
-	n = 50
+	n = 8
 	k = 40
 	e = 6
 	m = 0.5
 	pop = Population(k, n, e, m)
-	while (pop.states[0].fitness() < ((n-1)*n)/2):
-		pop.iteration()
+	s1 = State(n, [0,1,2,3,4,5,6,7])
+	s2 = State(n, [7,6,5,4,3,2,1,0])
+	res = pop.reproduce(s1, s2)
+	for s in res:
+		print (s.values)
+	# while (pop.states[0].fitness() < ((n-1)*n)/2):
+	# 	pop.iteration()
 	
-	print(pop.states[0])
+	# print(pop.states[0])
