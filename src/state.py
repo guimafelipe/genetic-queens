@@ -10,14 +10,8 @@ class State:
     def fitness(self):
         fit = 0
 
-        lines = {}
         up_diagonals = {}
         low_diagonals = {}
-
-        for i in range(self.n):
-            if lines.get(self.values[i], -1) == -1:
-                lines[self.values[i]] = 0
-            lines[self.values[i]] += 1
         
         for i in range(self.n):
             diagonal = self.values[i] - i
@@ -30,9 +24,6 @@ class State:
             if low_diagonals.get(diagonal, -1) == -1:
                 low_diagonals[diagonal] = 0
             low_diagonals[diagonal] += 1
-
-        for val in lines.values():
-            fit += (val*(val-1))/2
 
         for val in up_diagonals.values():
             fit += (val*(val-1))/2

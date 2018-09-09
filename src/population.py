@@ -1,4 +1,4 @@
-from state import *
+from src.state import *
 import random
 import math
 
@@ -23,7 +23,6 @@ class Population:
 		random.seed()
 		for i in range(self.k):
 			random.shuffle(self.base)
-			# print(self.base)
 			self.states.append(State(self.n, self.base))
 
 	# Order funcion, runs in O(k.log(k))
@@ -68,28 +67,26 @@ class Population:
 
 		self.update_elite()
 
-		r = self.random_select(self.k - self.e)
+		r = self.random_select(self.k)
 
-		for i in range(0, self.k - self.e, 2):
+		for i in range(0, self.k, 2):
 			new_states.extend(self.reproduce(r[i], r[i+1]))
 
-		self.states = new_states
+		self.states.extend(new_states)
+		self.order()
+		self.states = self.states[0:(self.k - self.e)]
 
-		for el in self.elite:
-			self.states.append(el)
-
-		# print(self.generation)
 		self.generation+=1
 
+		self.states.extend(self.elite)
+		
 		for el in self.states:
 			self.mutate(el)
-		
-		for el in self.elite:
-			self.states.append(el)
+			self.mutate(el)
 		
 		self.order()
 
-		# print("Best: ", self.states[0])
+		print("Best: ", self.states[0].fitness())
 		return new_states
 	
 	def crossover(self, cut1, cut2, inserted, values, valuesres):
@@ -98,11 +95,6 @@ class Population:
 
 		res = valuesres.copy()
 		
-		print("cut1: ", cut1, "cut2: ", cut2)
-		print("Inserted: ", inserted)
-		print("Values: ", values)
-		print("ResValues: ", valuesres)
-
 		while i < cut1:
 			while values[j] in inserted:
 				j+=1
@@ -117,7 +109,6 @@ class Population:
 			res[i] = values[j]
 			i+=1
 			j+=1
-		print("resultado: ", res)
 		return res
 
 	# Reproduce function, runs in O(n)
@@ -130,7 +121,6 @@ class Population:
 		vala = self.crossover(cut1, cut2, ainserted, b.values, a.values)	
 		valb = self.crossover(cut1, cut2, binserted, a.values, b.values)
 
-
 		resp = []
 		na = State(self.n, vala)
 		nb = State(self.n, valb)
@@ -141,21 +131,24 @@ class Population:
 	# Mutate function, runs in O(1)
 	def mutate(self, x):
 		prob = random.random()
-		before = State(self.n, x.values)
+		before_fit = x.fitness()
 		if prob < self.m:
 			i = random.randrange(0, self.n)
 			j = random.randrange(0, self.n)
 			aux = x.values[i]
 			x.values[i] = x.values[j]
 			x.values[j] = aux
-			if before.fitness() > x.fitness():
-				x = before
+			if before_fit > x.fitness():
+				aux = x.values[i]
+				x.values[i] = x.values[j]
+				x.values[j] = aux
 	
 	# Update elite function, runs in O(e)
 	def update_elite(self):
 		self.elite = []
+		self.order()
 		for i in range(self.e):
-			self.elite.append(self.states[i])
+			self.elite.append(State(self.n, self.states[i].values))
 	
 	def get_best(self):
 		return self.states[0]
